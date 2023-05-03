@@ -27,6 +27,7 @@ func NewSpan(fromInclusive bool, from float64, to float64, toInclusive bool) *Sp
 	}
 }
 
+// possibly useful api
 func EncompassingSpan(a *Span, b *Span) *Span {
 	minFrom := math.Min(a.From, b.From)
 	fromInclusive := a.FromInclusive
@@ -46,6 +47,7 @@ func EncompassingSpan(a *Span, b *Span) *Span {
 	}
 }
 
+// helper function
 func (base *Span) AddLeftRight(a *Span, b *Span) {
 	if a.To < b.From {
 		base.Left = a
@@ -77,7 +79,9 @@ func (a *Span) Union(b *Span) *Span {
 }
 
 func (a *Span) Complement() *Span {
-	return nil
+	left := NewSpan(true, math.MaxFloat64*-1, a.From, !a.FromInclusive)
+	right := NewSpan(!a.ToInclusive, a.To, math.MaxFloat64, true)
+	return left.Union(right)
 }
 
 func (a *Span) Difference(b *Span) *Span {
@@ -110,7 +114,7 @@ func (a *Span) ToString() string {
 		if a.ToInclusive {
 			end = "]"
 		}
-		return fmt.Sprintf("%s%f, %f%s", start, a.From, a.To, end)
+		return fmt.Sprintf("%s%.6e, %.6e%s", start, a.From, a.To, end)
 	}
 	return fmt.Sprintf("%s %s", a.Left.ToString(), a.Right.ToString())
 }
@@ -123,8 +127,8 @@ func main() {
 	fmt.Printf("a = %s\n", a.ToString())
 	fmt.Printf("b = %s\n", b.ToString())
 
-	//fmt.Printf("\na complement = %s\n", a.Complement().ToString())
-	//fmt.Printf("b complement = %s\n", b.Complement().ToString())
+	fmt.Printf("\na complement = %s\n", a.Complement().ToString())
+	fmt.Printf("b complement = %s\n", b.Complement().ToString())
 
 	fmt.Printf("\n10 in a = %t\n", a.Contains(10))
 	fmt.Printf("2 in a = %t\n", a.Contains(2))
